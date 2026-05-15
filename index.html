@@ -9,213 +9,92 @@
 
   <style>
     body{
-      margin:0;
-      height:100vh;
-      background:#222;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      font-family:'VT323', monospace;
+      margin:0;height:100vh;background:#222;display:flex;
+      justify-content:center;align-items:center;font-family:'VT323', monospace;
     }
 
     .device{
-      width:320px;
-      height:560px;
-      background:#d8d0b0;
-      border:6px solid #111;
-      border-radius:24px;
-      padding:24px;
-      box-sizing:border-box;
-      box-shadow:0 8px 0 #111;
+      width:320px;height:560px;background:#d8d0b0;border:6px solid #111;
+      border-radius:24px;padding:24px;box-sizing:border-box;box-shadow:0 8px 0 #111;
     }
 
     .screen{
-      width:100%;
-      height:360px;
-      background:#e9ecd8;
-      border:5px solid #111;
-      display:flex;
-      flex-direction:column;
-      overflow:hidden;
-      box-sizing:border-box;
+      width:100%;height:360px;background:#e9ecd8;border:5px solid #111;
+      display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;
     }
 
     .status-bar{
-      height:34px;
-      border-bottom:4px solid #111;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      font-size:22px;
-      letter-spacing:2px;
-      flex-shrink:0;
+      height:34px;border-bottom:4px solid #111;display:flex;
+      justify-content:center;align-items:center;font-size:22px;letter-spacing:2px;flex-shrink:0;
     }
 
     .play-area{
-      flex:1;
-      min-height:0;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      box-sizing:border-box;
-      overflow:hidden;
+      flex:1;min-height:0;display:flex;flex-direction:column;
+      justify-content:center;align-items:center;box-sizing:border-box;overflow:hidden;
     }
 
-    .knight{
-      font-size:52px;
-      margin-bottom:10px;
-      animation:bob 1.2s infinite steps(2);
-    }
+    .knight{font-size:52px;margin-bottom:10px;animation:bob 1.2s infinite steps(2)}
+    @keyframes bob{0%{transform:translateY(0)}50%{transform:translateY(-4px)}100%{transform:translateY(0)}}
 
-    @keyframes bob{
-      0%{transform:translateY(0)}
-      50%{transform:translateY(-4px)}
-      100%{transform:translateY(0)}
-    }
-
-    .ground{
-      width:90px;
-      border-bottom:4px solid #111;
-      margin-bottom:14px;
-    }
+    .ground{width:90px;border-bottom:4px solid #111;margin-bottom:14px}
 
     .textbox{
-      width:100%;
-      background:#f8f8f8;
-      border-top:4px solid #111;
-      padding:10px;
-      box-sizing:border-box;
-      text-align:center;
-      font-size:24px;
-      line-height:1.05;
+      width:100%;background:#f8f8f8;border-top:4px solid #111;padding:10px;
+      box-sizing:border-box;text-align:center;font-size:24px;line-height:1.05;
     }
 
     .checklist-wrapper{
-      width:100%;
-      height:100%;
-      min-height:0;
-      display:flex;
-      flex-direction:column;
-      background:#f8f8f8;
+      width:100%;height:100%;min-height:0;display:flex;flex-direction:column;background:#f8f8f8;
     }
 
     .check-title{
-      text-align:center;
-      font-size:24px;
-      padding:5px;
-      border-bottom:4px solid #111;
-      flex-shrink:0;
+      text-align:center;font-size:24px;padding:5px;border-bottom:4px solid #111;flex-shrink:0;
     }
 
-    .checklist{
-      flex:1;
-      min-height:0;
-      overflow-y:auto;
-      padding:6px 8px;
-      box-sizing:border-box;
-    }
+    .checklist{flex:1;min-height:0;overflow-y:auto;padding:6px 8px;box-sizing:border-box}
 
     .rule{
-      display:flex;
-      align-items:center;
-      gap:7px;
-      margin-bottom:4px;
-      font-size:21px;
-      line-height:.95;
+      display:flex;align-items:center;gap:7px;margin-bottom:4px;
+      font-size:21px;line-height:.95;
     }
 
     .box{
-      width:13px;
-      height:13px;
-      border:3px solid #111;
-      background:#f8f8f8;
-      flex-shrink:0;
-      cursor:pointer;
+      width:13px;height:13px;border:3px solid #111;background:#f8f8f8;
+      flex-shrink:0;cursor:pointer;
     }
 
-    .box.checked{
-      background:#111;
-    }
+    .box.checked{background:#111}
 
     .check-buttons{
-      border-top:4px solid #111;
-      padding:6px;
-      display:flex;
-      gap:8px;
-      flex-shrink:0;
-      background:#f8f8f8;
+      border-top:4px solid #111;padding:6px;display:flex;gap:8px;
+      flex-shrink:0;background:#f8f8f8;
     }
 
     .mini-btn{
-      flex:1;
-      height:32px;
-      background:#111;
-      color:white;
-      border:none;
-      font-family:'VT323', monospace;
-      font-size:22px;
-      cursor:pointer;
+      flex:1;height:32px;background:#111;color:white;border:none;
+      font-family:'VT323', monospace;font-size:22px;cursor:pointer;
     }
 
-    .week-row{
-      margin-top:18px;
-      display:flex;
-      justify-content:space-between;
-      gap:5px;
-    }
+    .week-row{margin-top:18px;display:flex;justify-content:space-between;gap:5px}
 
     .day{
-      width:44px;
-      height:30px;
-      border:3px solid #111;
-      background:#f8f8f8;
-      font-size:18px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
+      width:44px;height:30px;border:3px solid #111;background:#f8f8f8;
+      font-size:18px;display:flex;justify-content:center;align-items:center;
     }
 
-    .day.complete{
-      background:#111;
-      color:white;
-    }
+    .day.complete{background:#111;color:white}
+    .day.failed{text-decoration:line-through}
+    .day.today{outline:3px solid #111}
+    .day.inactive{opacity:.35}
 
-    .day.failed{
-      text-decoration:line-through;
-    }
-
-    .day.today{
-      outline:3px solid #111;
-    }
-
-    .day.inactive{
-      opacity:.35;
-    }
-
-    .buttons{
-      margin-top:22px;
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-    }
+    .buttons{margin-top:22px;display:flex;justify-content:space-between;gap:8px}
 
     button{
-      flex:1;
-      height:42px;
-      background:#111;
-      color:white;
-      border:none;
-      font-family:'VT323', monospace;
-      font-size:22px;
-      box-shadow:0 4px 0 #333;
-      cursor:pointer;
+      flex:1;height:42px;background:#111;color:white;border:none;
+      font-family:'VT323', monospace;font-size:22px;box-shadow:0 4px 0 #333;cursor:pointer;
     }
 
-    button:active{
-      transform:translateY(3px);
-      box-shadow:0 1px 0 #333;
-    }
+    button:active{transform:translateY(3px);box-shadow:0 1px 0 #333}
   </style>
 </head>
 
@@ -344,22 +223,52 @@ function renderDays(){
 function showMain(){
   renderDays();
 
-  if(todayIndex<0){
-    document.getElementById("playArea").innerHTML=
-      "<div class='knight'>♞</div><div class='ground'></div><div class='textbox'>WEEKEND<br>NO TRADING DAY<br>REST</div>";
+  let now = new Date();
+
+  let timeString = now.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  let dateString = now.toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric'
+  });
+
+  if(todayIndex < 0){
+    document.getElementById("playArea").innerHTML =
+      "<div class='knight'>♞</div>" +
+      "<div class='ground'></div>" +
+      "<div class='textbox'>" +
+      dateString + " • " + timeString +
+      "<br>WEEKEND" +
+      "<br>REST DAY" +
+      "</div>";
     return;
   }
 
-  let status=state.statuses[todayIndex];
-  let text="STEADY";
-  let symbol="♞";
+  let status = state.statuses[todayIndex];
+  let text = "STEADY";
+  let symbol = "♞";
 
-  if(status==="complete"){text="DAY LOCKED CLEAN";symbol="♔"}
-  if(status==="failed"){text="INTEGRITY DAMAGED";symbol="♜"}
+  if(status === "complete"){
+    text = "DAY LOCKED CLEAN";
+    symbol = "♔";
+  }
 
-  document.getElementById("playArea").innerHTML=
-    "<div class='knight'>"+symbol+"</div><div class='ground'></div><div class='textbox'>"+
-    "TODAY<br>"+days[todayIndex]+"<br>STATUS: "+text+"</div>";
+  if(status === "failed"){
+    text = "INTEGRITY DAMAGED";
+    symbol = "♜";
+  }
+
+  document.getElementById("playArea").innerHTML =
+    "<div class='knight'>" + symbol + "</div>" +
+    "<div class='ground'></div>" +
+    "<div class='textbox'>" +
+    dateString + " • " + timeString +
+    "<br>" + days[todayIndex] +
+    "<br>STATUS: " + text +
+    "</div>";
 }
 
 function showChecklist(){
@@ -411,10 +320,13 @@ function lockInDay(){
 
   if(passed){playVictory()}else{playFailure()}
 
-  document.getElementById("playArea").innerHTML=
-    "<div class='knight'>"+(passed?"♔":"♜")+"</div><div class='ground'></div><div class='textbox'>"+
+  document.getElementById("playArea").innerHTML =
+    "<div class='knight'>"+(passed?"♔":"♜")+"</div>" +
+    "<div class='ground'></div>" +
+    "<div class='textbox'>" +
     "DAY LOCKED<br>"+total+"/10 RULES KEPT<br>"+
-    (passed?"DISCIPLINE MAINTAINED":"INTEGRITY DAMAGED")+"</div>";
+    (passed?"DISCIPLINE MAINTAINED":"INTEGRITY DAMAGED")+
+    "</div>";
 
   renderDays();
 }
@@ -427,9 +339,14 @@ function showWeek(){
   let failed=state.statuses.filter(s=>s==="failed").length;
   let active=state.statuses.filter(s=>s!=="inactive").length;
 
-  document.getElementById("playArea").innerHTML=
-    "<div class='knight'>♞</div><div class='ground'></div><div class='textbox'>"+
-    "WEEK "+weekKey+"<br>CLEAN:"+clean+" FAILED:"+failed+"<br>ACTIVE DAYS:"+active+"</div>";
+  document.getElementById("playArea").innerHTML =
+    "<div class='knight'>♞</div>" +
+    "<div class='ground'></div>" +
+    "<div class='textbox'>" +
+    "WEEK "+weekKey+"<br>"+
+    "CLEAN:"+clean+" FAILED:"+failed+"<br>"+
+    "ACTIVE DAYS:"+active+
+    "</div>";
 }
 
 function resetWeek(){
