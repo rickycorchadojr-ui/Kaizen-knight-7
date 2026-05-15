@@ -42,6 +42,10 @@
       box-sizing:border-box;
     }
 
+    .screen.boot-dark{
+      background:#111;
+    }
+
     .status-bar{
       height:38px;
       border-bottom:4px solid #111;
@@ -53,6 +57,11 @@
       flex-shrink:0;
     }
 
+    .boot-dark .status-bar{
+      color:#e9ecd8;
+      border-bottom:4px solid #e9ecd8;
+    }
+
     .play-area{
       flex:1;
       min-height:0;
@@ -62,6 +71,19 @@
       align-items:center;
       box-sizing:border-box;
       overflow:hidden;
+    }
+
+    .boot-text{
+      color:#e9ecd8;
+      font-size:32px;
+      letter-spacing:2px;
+      animation:bootPulse .8s infinite steps(2);
+    }
+
+    @keyframes bootPulse{
+      0%{opacity:1}
+      50%{opacity:.35}
+      100%{opacity:1}
     }
 
     .pet-zone{
@@ -252,9 +274,11 @@
 
 <div class="device">
 
-  <div class="screen">
-    <div class="status-bar">KAIZEN KNIGHT</div>
-    <div class="play-area" id="playArea"></div>
+  <div class="screen boot-dark" id="screen">
+    <div class="status-bar" id="statusBar">POWER</div>
+    <div class="play-area" id="playArea">
+      <div class="boot-text">BOOTING...</div>
+    </div>
   </div>
 
   <div class="week-row">
@@ -296,6 +320,7 @@ let state=loadState();
 
 let moveTimer=null;
 let petStep=0;
+let appBooted=false;
 
 const petPositions=[50,40,32,44,58,66,54,50];
 
@@ -336,21 +361,23 @@ function saveState(){
 }
 
 function playBeep(freq=440,duration=100,volume=.08){
-  const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  const oscillator=audioCtx.createOscillator();
-  const gainNode=audioCtx.createGain();
+  try{
+    const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const oscillator=audioCtx.createOscillator();
+    const gainNode=audioCtx.createGain();
 
-  oscillator.type="square";
-  oscillator.frequency.value=freq;
+    oscillator.type="square";
+    oscillator.frequency.value=freq;
 
-  gainNode.gain.setValueAtTime(volume,audioCtx.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration/1000);
+    gainNode.gain.setValueAtTime(volume,audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration/1000);
 
-  oscillator.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
 
-  oscillator.start();
-  oscillator.stop(audioCtx.currentTime+duration/1000);
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime+duration/1000);
+  }catch(e){}
 }
 
 function playTick(){
@@ -365,6 +392,13 @@ function playVictory(){
 
 function playFailure(){
   playBeep(180,220,.08);
+}
+
+function playBoot(){
+  playBeep(196,70,.045);
+  setTimeout(()=>playBeep(294,80,.045),110);
+  setTimeout(()=>playBeep(392,90,.045),220);
+  setTimeout(()=>playBeep(523,120,.05),360);
 }
 
 function renderDays(){
@@ -395,33 +429,59 @@ function stopPet(){
   clearInterval(moveTimer);
 }
 
-function startPet(){
+function startPet(delay=0){
   stopPet();
 
-  const walker=document.getElementById("petWalker");
-  if(!walker) return;
+  setTimeout(()=>{
+    const walker=document.getElementById("petWalker");
+    if(!walker) return;
 
-  petStep=0;
-  walker.style.left=petPositions[petStep]+"%";
+    petStep=0;
+    walker.style.left=petPositions[petStep]+"%";
 
-  moveTimer=setInterval(()=>{
-    const current=petPositions[petStep];
-    petStep=(petStep+1)%petPositions.length;
-    const next=petPositions[petStep];
+    moveTimer=setInterval(()=>{
+      const current=petPositions[petStep];
+      petStep=(petStep+1)%petPositions.length;
+      const next=petPositions[petStep];
 
-    if(next>current){
-      walker.className="pet-walker right";
-    }else if(next<current){
-      walker.className="pet-walker left";
-    }
+      if(next>current){
+        walker.className="pet-walker right";
+      }else if(next<current){
+        walker.className="pet-walker left";
+      }
 
-    walker.style.left=next+"%";
-  },1200);
+      walker.style.left=next+"%";
+    },1200);
+  },delay);
 }
 
-function showMain(){
+function showBoot(){
   stopPet();
   renderDays();
+
+  document.getElementById("screen").classList.add("boot-dark");
+  document.getElementById("statusBar").innerHTML="POWER";
+  document.getElementById("playArea").innerHTML="<div class='boot-text'>BOOTING...</div>";
+
+  setTimeout(()=>playBoot(),250);
+
+  setTimeout(()=>{
+    document.getElementById("statusBar").innerHTML="KAIZEN KNIGHT";
+  },650);
+
+  setTimeout(()=>{
+    document.getElementById("screen").classList.remove("boot-dark");
+    appBooted=true;
+    showMain(true);
+  },1100);
+}
+
+function showMain(fromBoot=false){
+  stopPet();
+  renderDays();
+
+  document.getElementById("screen").classList.remove("boot-dark");
+  document.getElementById("statusBar").innerHTML="KAIZEN KNIGHT";
 
   let now = new Date();
 
@@ -445,7 +505,7 @@ function showMain(){
       "<br>REST DAY" +
       "</div>";
 
-    startPet();
+    startPet(fromBoot ? 650 : 0);
     return;
   }
 
@@ -472,7 +532,7 @@ function showMain(){
     "<br>STATUS: " + text +
     "</div>";
 
-  startPet();
+  startPet(fromBoot ? 650 : 0);
 }
 
 function showChecklist(){
@@ -576,7 +636,7 @@ function resetWeek(){
   showMain();
 }
 
-showMain();
+showBoot();
 </script>
 
 </body>
