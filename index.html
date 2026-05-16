@@ -336,6 +336,7 @@ let weekKey=getWeekKey();
 let state=loadState();
 
 let moveTimer=null;
+let blinkTimer=null;
 let petStep=0;
 let poweredOn=false;
 
@@ -512,7 +513,7 @@ function petHTML(){
     <div class="pet-zone">
       <div class="pet-walker left" id="petWalker">
         <div class="pet-bob">
-          <img class="knight-img" src="knight.PNG" alt="Kaizen Knight">
+          <img class="knight-img" id="knightImg" src="knight.png" alt="Kaizen Knight">
         </div>
       </div>
     </div>
@@ -521,6 +522,25 @@ function petHTML(){
 
 function stopPet(){
   clearInterval(moveTimer);
+  clearInterval(blinkTimer);
+}
+
+function startBlink(){
+  clearInterval(blinkTimer);
+
+  blinkTimer=setInterval(()=>{
+    const knight=document.getElementById("knightImg");
+    if(!knight) return;
+
+    knight.src="blink.png";
+
+    setTimeout(()=>{
+      const knightAgain=document.getElementById("knightImg");
+      if(knightAgain){
+        knightAgain.src="knight.png";
+      }
+    },140);
+  },3600);
 }
 
 function startPet(delay=0){
@@ -532,6 +552,8 @@ function startPet(delay=0){
 
     petStep=0;
     walker.style.left=petPositions[petStep]+"%";
+
+    startBlink();
 
     moveTimer=setInterval(()=>{
       const current=petPositions[petStep];
