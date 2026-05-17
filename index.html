@@ -109,23 +109,23 @@
 
     .pet-zone{
       width:240px;
-      height:125px;
+      height:130px;
       position:relative;
-      margin-bottom:-12px;
+      margin-bottom:-10px;
     }
 
     .pet-walker{
       position:absolute;
       left:50%;
-      bottom:25px;
+      bottom:28px;
       transform:translateX(-50%);
     }
 
     .pet-bob{ animation:bob 1.2s infinite steps(2); }
 
     .pet-img{
-      width:154px;
-      height:154px;
+      width:160px;
+      height:160px;
       display:block;
       image-rendering:pixelated;
       image-rendering:crisp-edges;
@@ -143,36 +143,29 @@
       100%{transform:translateY(0)}
     }
 
-    .growth{
-      font-size:42px;
-      line-height:1;
-      margin-bottom:8px;
-      filter:grayscale(1) contrast(2);
-    }
-
     .ground{
       width:100px;
       border-bottom:4px solid #111;
-      margin-bottom:12px;
+      margin-bottom:14px;
     }
 
     .textbox{
       width:100%;
       background:#f8f8f8;
       border-top:4px solid #111;
-      padding:8px;
+      padding:9px;
       box-sizing:border-box;
       text-align:center;
       font-size:24px;
-      line-height:1.02;
+      line-height:1.03;
     }
 
     .subline{
-      font-size:21px;
+      font-size:20px;
       opacity:.9;
     }
 
-    .checklist-wrapper{
+    .panel{
       width:100%;
       height:100%;
       min-height:0;
@@ -181,7 +174,7 @@
       background:#f8f8f8;
     }
 
-    .check-title{
+    .panel-title{
       text-align:center;
       font-size:25px;
       padding:5px;
@@ -189,26 +182,26 @@
       flex-shrink:0;
     }
 
-    .checklist{
+    .scroll{
       flex:1;
       min-height:0;
       overflow-y:auto;
-      padding:7px 10px;
+      padding:8px 10px;
       box-sizing:border-box;
     }
 
     .section-label{
       font-size:23px;
-      margin:7px 0 4px;
+      margin:8px 0 5px;
       border-bottom:3px solid #111;
       letter-spacing:1px;
     }
 
     .rule{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       gap:8px;
-      margin-bottom:5px;
+      margin-bottom:6px;
       font-size:22px;
       line-height:.95;
     }
@@ -220,9 +213,22 @@
       background:#f8f8f8;
       flex-shrink:0;
       cursor:pointer;
+      margin-top:1px;
     }
 
     .box.checked{ background:#111; }
+
+    .damage .box.checked{
+      background:#111;
+    }
+
+    .note{
+      font-size:22px;
+      line-height:1.0;
+      margin-bottom:10px;
+      padding-bottom:8px;
+      border-bottom:2px dotted #111;
+    }
 
     .small-note{
       font-size:19px;
@@ -232,7 +238,7 @@
       text-align:center;
     }
 
-    .check-buttons{
+    .panel-buttons{
       border-top:4px solid #111;
       padding:6px;
       display:flex;
@@ -243,12 +249,12 @@
 
     .mini-btn{
       flex:1;
-      height:34px;
+      height:36px;
       background:#111;
       color:white;
       border:none;
       font-family:'VT323', monospace;
-      font-size:23px;
+      font-size:24px;
       cursor:pointer;
     }
 
@@ -333,59 +339,47 @@
   </div>
 
   <div class="buttons">
-    <button onclick="showVows()">VOWS</button>
-    <button onclick="showStatus()">STATUS</button>
+    <button onclick="showCheck()">CHECK</button>
+    <button onclick="showCode()">CODE</button>
     <button onclick="resetWeek()">RESET</button>
   </div>
 
 </div>
 
 <script>
-const vowGroups=[
-  {
-    name:"PREP",
-    rules:[
-      "RISK LOCKED",
-      "MAX SIZE CONFIRMED",
-      "ROUTINE SELECTED"
-    ]
-  },
-  {
-    name:"SESSION",
-    rules:[
-      "STAYED IN ROUTINE",
-      "NO REVENGE TRADES",
-      "DID NOT OVERSIZE",
-      "COMPOSURE KEPT"
-    ]
-  },
-  {
-    name:"CLOSING",
-    rules:[
-      "JOURNAL COMPLETE",
-      "MISTAKES REVIEWED",
-      "SESSION CLOSED CLEAN"
-    ]
-  }
+const vows=[
+  "MAX CONTRACTS 5",
+  "LOCK RISK SETTINGS",
+  "RECORD EVERY SESSION",
+  "DON'T TRADE OUTSIDE ROUTINE",
+  "DON'T SIZE UP AFTER A LOSS",
+  "JOURNAL BOTH ACCOUNTS",
+  "DON'T GET EMOTIONAL"
 ];
 
-const triggers=[
-  "STOP HIT",
-  "ROUTINE BROKEN",
-  "EMOTION SPIKE"
+const damageStates=[
+  "TRADED OVER 5 CONTRACTS",
+  "RISK SETTINGS NOT LOCKED",
+  "UNRECORDED SESSION",
+  "TRADED OUTSIDE ROUTINE",
+  "SIZED UP AFTER A LOSS",
+  "SECOND ACCOUNT TRADED AFTER FIRST STOP",
+  "JOURNAL ABANDONED",
+  "SPIRALED AFTER LOSS"
 ];
 
-const responses=[
-  "SECOND ACCT LOCKED",
-  "STEPPED AWAY",
-  "RESET BEFORE CONTINUE"
+const codeNotes=[
+  "CONSIDER STOPPING AT -250.",
+  "DON'T TRADE SECOND ACCOUNT IF FIRST ACCOUNT IS STOPPED OUT.",
+  "CAREFUL FOR MANIPULATION, KNIVES, SUDDEN REVERSALS, AND PRICE COMING CLOSE TO YOUR STOP.",
+  "DON'T RELY ON STOPS. STAY ALERT!",
+  "SLOWER IS QUICKER AFTER A LOSS.",
+  "A GOOD DAY MEANS INTEGRITY WAS PRESERVED.",
+  "TRADING DOES NOT END WHEN TOPSTEP CLOSES. PROTECT THE REST OF THE DAY."
 ];
 
 const days=["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"];
 const shortDays=["MON","TUE","WED","THU","FRI"];
-
-let flatRules=[];
-vowGroups.forEach(g=>g.rules.forEach(r=>flatRules.push(r)));
 
 let todayIndex=getTradingDayIndex();
 let weekKey=getWeekKey();
@@ -454,10 +448,12 @@ function buildSounds(){
   sounds.tick=new Audio(makeToneWav(720,.045,.7));
   sounds.fail=new Audio(makeToneWav(170,.26,.8));
   sounds.reset=new Audio(makeToneWav(220,.18,.75));
+
   sounds.boot1=new Audio(makeToneWav(196,.09,.85));
   sounds.boot2=new Audio(makeToneWav(294,.10,.85));
   sounds.boot3=new Audio(makeToneWav(392,.11,.85));
   sounds.boot4=new Audio(makeToneWav(523,.15,.9));
+
   sounds.victory1=new Audio(makeToneWav(523,.13,.8));
   sounds.victory2=new Audio(makeToneWav(659,.13,.8));
   sounds.victory3=new Audio(makeToneWav(784,.24,.85));
@@ -500,13 +496,6 @@ function getTradingDayIndex(){
   return d-1;
 }
 
-function getSessionName(){
-  let h=new Date().getHours();
-  if(h>=18 || h<3) return "PM SESSION";
-  if(h>=8 && h<13) return "AM SESSION";
-  return "OFF SESSION";
-}
-
 function getWeekKey(){
   let now=new Date();
   let day=now.getDay();
@@ -519,20 +508,22 @@ function freshState(){
   return{
     weekKey:weekKey,
     statuses:["inactive","inactive","inactive","inactive","inactive"],
-    checks:Array.from({length:5},()=>Array(flatRules.length).fill(false)),
-    triggers:Array.from({length:5},()=>Array(triggers.length).fill(false)),
-    responses:Array.from({length:5},()=>Array(responses.length).fill(false)),
-    sessionStarted:Array(5).fill(false)
+    vows:Array.from({length:5},()=>Array(vows.length).fill(false)),
+    damage:Array.from({length:5},()=>Array(damageStates.length).fill(false))
   };
 }
 
 function loadState(){
-  let saved=localStorage.getItem("kaizenKnightV2");
+  let saved=localStorage.getItem("kaizenKnightV3");
   if(!saved) return freshState();
 
   try{
     let parsed=JSON.parse(saved);
     if(parsed.weekKey!==weekKey) return freshState();
+
+    if(!parsed.vows || parsed.vows[0].length!==vows.length) return freshState();
+    if(!parsed.damage || parsed.damage[0].length!==damageStates.length) return freshState();
+
     return parsed;
   }catch(e){
     return freshState();
@@ -540,7 +531,7 @@ function loadState(){
 }
 
 function saveState(){
-  localStorage.setItem("kaizenKnightV2",JSON.stringify(state));
+  localStorage.setItem("kaizenKnightV3",JSON.stringify(state));
 }
 
 function powerOn(){
@@ -570,18 +561,16 @@ function failedCount(){
   return state.statuses.filter(s=>s==="failed").length;
 }
 
-function perfectWeek(){
-  return cleanCount()===5 && failedCount()===0;
+function anyDamage(dayIndex){
+  return state.damage[dayIndex].some(Boolean);
 }
 
-function growthStage(){
-  const clean=cleanCount();
-  if(clean<=0) return "·";
-  if(clean===1) return "◆";
-  if(clean===2) return "♣";
-  if(clean===3) return "♧";
-  if(clean===4) return "✦";
-  return "✹";
+function allVowsKept(dayIndex){
+  return state.vows[dayIndex].every(Boolean);
+}
+
+function perfectWeek(){
+  return cleanCount()===5 && failedCount()===0;
 }
 
 function getPetImage(type){
@@ -711,7 +700,6 @@ function showMain(fromBoot=false){
 
   if(todayIndex<0){
     document.getElementById("playArea").innerHTML=
-      "<div class='growth'>"+growthStage()+"</div>"+
       petHTML("knight")+
       "<div class='ground'></div>"+
       "<div class='textbox'>"+
@@ -725,12 +713,11 @@ function showMain(fromBoot=false){
   }
 
   let status=state.statuses[todayIndex];
-  let session=state.sessionStarted[todayIndex];
-  let text=session ? "SESSION ACTIVE" : "STEADY";
+  let text="STEADY";
   let petType="knight";
 
   if(status==="complete"){
-    text="DAY LOCKED CLEAN";
+    text="DAY SEALED CLEAN";
     petType=perfectWeek() ? "angel" : "king";
   }
 
@@ -740,19 +727,18 @@ function showMain(fromBoot=false){
   }
 
   document.getElementById("playArea").innerHTML=
-    "<div class='growth'>"+growthStage()+"</div>"+
     petHTML(petType)+
     "<div class='ground'></div>"+
     "<div class='textbox'>"+
     dt.dateString+" • "+days[todayIndex]+
-    "<br>"+getSessionName()+" / "+text+
+    "<br>STATUS: "+text+
     "<br><span class='subline'>CLEAN DAYS: "+cleanCount()+"/5</span>"+
     "</div>";
 
   startPet(fromBoot ? 650 : 0);
 }
 
-function showVows(){
+function showCheck(){
   if(!poweredOn) return;
 
   stopPet();
@@ -765,51 +751,32 @@ function showVows(){
   playMenu();
 
   let html="";
-  html+="<div class='checklist-wrapper'>";
-  html+="<div class='check-title'>"+shortDays[todayIndex]+" VOWS</div>";
-  html+="<div class='checklist' id='checklist'>";
+  html+="<div class='panel'>";
+  html+="<div class='panel-title'>"+shortDays[todayIndex]+" CHECK</div>";
+  html+="<div class='scroll' id='checkScroll'>";
 
-  let flatIndex=0;
+  html+="<div class='section-label'>VOWS</div>";
+  html+="<div class='small-note'>CHECK WHAT HELD TRUE TODAY</div>";
 
-  for(let g=0;g<vowGroups.length;g++){
-    html+="<div class='section-label'>"+vowGroups[g].name+"</div>";
-
-    for(let r=0;r<vowGroups[g].rules.length;r++){
-      const checked=state.checks[todayIndex][flatIndex];
-      html+="<div class='rule'>";
-      html+="<div class='box "+(checked?"checked":"")+"' id='box"+flatIndex+"' onclick='toggleRule("+flatIndex+")'></div>";
-      html+="<div>"+vowGroups[g].rules[r]+"</div>";
-      html+="</div>";
-      flatIndex++;
-    }
-  }
-
-  html+="<div class='section-label'>TRIGGERS</div>";
-  html+="<div class='small-note'>ONLY MARK IF IT HAPPENED</div>";
-
-  for(let i=0;i<triggers.length;i++){
-    const checked=state.triggers[todayIndex][i];
+  for(let i=0;i<vows.length;i++){
     html+="<div class='rule'>";
-    html+="<div class='box "+(checked?"checked":"")+"' id='trigger"+i+"' onclick='toggleTrigger("+i+")'></div>";
-    html+="<div>"+triggers[i]+"</div>";
+    html+="<div class='box "+(state.vows[todayIndex][i]?"checked":"")+"' id='vow"+i+"' onclick='toggleVow("+i+")'></div>";
+    html+="<div>"+vows[i]+"</div>";
     html+="</div>";
   }
 
-  if(anyTrigger()){
-    html+="<div class='section-label'>RESPONSE</div>";
+  html+="<div class='section-label'>DAMAGE</div>";
+  html+="<div class='small-note'>ONLY MARK IF CONTAINMENT BROKE</div>";
 
-    for(let i=0;i<responses.length;i++){
-      const checked=state.responses[todayIndex][i];
-      html+="<div class='rule'>";
-      html+="<div class='box "+(checked?"checked":"")+"' id='response"+i+"' onclick='toggleResponse("+i+")'></div>";
-      html+="<div>"+responses[i]+"</div>";
-      html+="</div>";
-    }
+  for(let i=0;i<damageStates.length;i++){
+    html+="<div class='rule damage'>";
+    html+="<div class='box "+(state.damage[todayIndex][i]?"checked":"")+"' id='damage"+i+"' onclick='toggleDamage("+i+")'></div>";
+    html+="<div>"+damageStates[i]+"</div>";
+    html+="</div>";
   }
 
   html+="</div>";
-  html+="<div class='check-buttons'>";
-  html+="<button class='mini-btn' onclick='startSession()'>START</button>";
+  html+="<div class='panel-buttons'>";
   html+="<button class='mini-btn' onclick='lockInDay()'>LOCK</button>";
   html+="<button class='mini-btn' onclick='showMain()'>BACK</button>";
   html+="</div>";
@@ -818,49 +785,48 @@ function showVows(){
   document.getElementById("playArea").innerHTML=html;
 }
 
-function anyTrigger(){
-  if(todayIndex<0) return false;
-  return state.triggers[todayIndex].some(Boolean);
-}
+function showCode(){
+  if(!poweredOn) return;
 
-function toggleRule(index){
-  state.checks[todayIndex][index]=!state.checks[todayIndex][index];
-  saveState();
+  stopPet();
+  playMenu();
 
-  let box=document.getElementById("box"+index);
-  if(box) box.classList.toggle("checked",state.checks[todayIndex][index]);
+  let html="";
+  html+="<div class='panel'>";
+  html+="<div class='panel-title'>FIELD CODE</div>";
+  html+="<div class='scroll'>";
 
-  playTick();
-}
-
-function toggleTrigger(index){
-  state.triggers[todayIndex][index]=!state.triggers[todayIndex][index];
-
-  if(!anyTrigger()){
-    state.responses[todayIndex]=Array(responses.length).fill(false);
+  for(let i=0;i<codeNotes.length;i++){
+    html+="<div class='note'>"+codeNotes[i]+"</div>";
   }
 
-  saveState();
-  playTick();
-  showVows();
+  html+="</div>";
+  html+="<div class='panel-buttons'>";
+  html+="<button class='mini-btn' onclick='showMain()'>BACK</button>";
+  html+="</div>";
+  html+="</div>";
+
+  document.getElementById("playArea").innerHTML=html;
 }
 
-function toggleResponse(index){
-  state.responses[todayIndex][index]=!state.responses[todayIndex][index];
+function toggleVow(index){
+  state.vows[todayIndex][index]=!state.vows[todayIndex][index];
   saveState();
 
-  let box=document.getElementById("response"+index);
-  if(box) box.classList.toggle("checked",state.responses[todayIndex][index]);
+  let box=document.getElementById("vow"+index);
+  if(box) box.classList.toggle("checked",state.vows[todayIndex][index]);
 
   playTick();
 }
 
-function startSession(){
-  if(todayIndex<0) return;
-  state.sessionStarted[todayIndex]=true;
+function toggleDamage(index){
+  state.damage[todayIndex][index]=!state.damage[todayIndex][index];
   saveState();
-  playMenu();
-  showMain();
+
+  let box=document.getElementById("damage"+index);
+  if(box) box.classList.toggle("checked",state.damage[todayIndex][index]);
+
+  playTick();
 }
 
 function lockInDay(){
@@ -868,17 +834,10 @@ function lockInDay(){
 
   stopPet();
 
-  let total=state.checks[todayIndex].filter(Boolean).length;
-  let basePassed=total===flatRules.length;
+  let vowsKept=state.vows[todayIndex].filter(Boolean).length;
+  let damageCount=state.damage[todayIndex].filter(Boolean).length;
 
-  let triggerHappened=anyTrigger();
-  let responsePassed=true;
-
-  if(triggerHappened){
-    responsePassed=state.responses[todayIndex].some(Boolean);
-  }
-
-  let passed=basePassed && responsePassed && !state.triggers[todayIndex][1];
+  let passed=allVowsKept(todayIndex) && damageCount===0;
 
   state.statuses[todayIndex]=passed?"complete":"failed";
   saveState();
@@ -893,12 +852,11 @@ function lockInDay(){
   if(passed && cleanCount()===5) petType="angel";
 
   document.getElementById("playArea").innerHTML=
-    "<div class='growth'>"+growthStage()+"</div>"+
     petHTML(petType)+
     "<div class='ground'></div>"+
     "<div class='textbox'>"+
-    "DAY LOCKED<br>"+
-    total+"/"+flatRules.length+" VOWS KEPT<br>"+
+    "DAY SEALED<br>"+
+    vowsKept+"/"+vows.length+" VOWS KEPT<br>"+
     (passed ? "INTEGRITY PRESERVED" : "INTEGRITY DAMAGED")+
     "</div>";
 
@@ -906,38 +864,11 @@ function lockInDay(){
   startPet();
 }
 
-function showStatus(){
-  if(!poweredOn) return;
-
-  stopPet();
-  playMenu();
-  renderDays();
-
-  let activeDays=state.statuses.filter(s=>s!=="inactive").length;
-  let clean=cleanCount();
-  let failed=failedCount();
-
-  let message="CHAIN UNBROKEN";
-  if(failed>0) message="CHAIN BROKEN";
-  if(clean===5 && failed===0) message="ANGEL WEEK";
-
-  document.getElementById("playArea").innerHTML=
-    "<div class='growth'>"+growthStage()+"</div>"+
-    petHTML(perfectWeek() ? "angel" : "knight")+
-    "<div class='ground'></div>"+
-    "<div class='textbox'>"+
-    "WEEK OF "+weekKey+
-    "<br>CLEAN:"+clean+" FAILED:"+failed+
-    "<br><span class='subline'>"+message+" / ACTIVE:"+activeDays+"</span>"+
-    "</div>";
-
-  startPet();
-}
-
 function resetWeek(){
   if(!poweredOn) return;
 
   stopPet();
+
   playReset();
   state=freshState();
   saveState();
