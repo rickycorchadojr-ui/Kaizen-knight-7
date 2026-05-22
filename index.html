@@ -739,7 +739,7 @@ function showBoot(){
   document.getElementById("screen").className="screen boot-dark";
   document.getElementById("statusBar").innerHTML="POWER";
   document.getElementById("playArea").innerHTML="<div class='boot-text'>BOOTING...</div>";
-  setTimeout(()=>{ document.getElementById("statusBar").innerHTML=""; },650);
+ setTimeout(()=>{ document.getElementById("statusBar").innerHTML="BOOTING..."; },650);
   setTimeout(()=>{
     document.getElementById("screen").className="screen";
     showMain(true);
