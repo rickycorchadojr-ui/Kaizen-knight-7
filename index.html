@@ -185,7 +185,7 @@ function getSceneImage(){
   return "bgtest.png";
 }
 function sceneBackgroundHTML(){ return "<img class='scene-bg' src='"+getSceneImage()+"'>"; }
-function isOctober(){ return new Date().getMonth()===9; }
+function isOctober(){ return new Date().getMonth()===5; }
 function halloweenHTML(){ return isOctober() ? "<img class='halloween-overlay' src='Halloween.png'>" : ""; }
 function ufoHTML(){ return state.streak>=35 ? "<img class='ufo' src='ufo.png'>" : ""; }
 function getAchievementDays(){
