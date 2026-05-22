@@ -190,16 +190,26 @@ function sceneBackgroundHTML(){
 }
 
 const FORCE_HALLOWEEN_TEST=false;
+const FORCE_CHRISTMAS_TEST=false;
 
-function halloweenHTML(){
-  const isOctober=new Date().getMonth()===9;
+function seasonalOverlayHTML(){
+
+  const month=new Date().getMonth();
+
+  const isOctober=month===9;
+  const isDecember=month===11;
 
   if(FORCE_HALLOWEEN_TEST || isOctober){
     return "<img class='halloween-overlay' src='Halloween.png'>";
   }
 
+  if(FORCE_CHRISTMAS_TEST || isDecember){
+    return "<img class='halloween-overlay' src='Christmas.png'>";
+  }
+
   return "";
 }
+
 function ufoHTML(){ return state.streak>=35 ? "<img class='ufo' src='ufo.png'>" : ""; }
 function getAchievementDays(){
   let arr=[];
@@ -716,7 +726,9 @@ function showMain(fromBoot=false){
     achievementHTML()+
     streakHTML()+
     sceneBackgroundHTML()+
-halloweenHTML()+
+
+seasonalOverlayHTML()+
+
 ufoHTML()+
 petHTML(petType)+
     "<div class='ground'></div>"+
@@ -973,7 +985,9 @@ function lockDay(){
     streakHTML()+
 
 sceneBackgroundHTML()+
-halloweenHTML()+
+
+seasonalOverlayHTML()+
+
 ufoHTML()+
 petHTML(petType)+
 
