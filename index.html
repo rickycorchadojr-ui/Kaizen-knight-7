@@ -417,14 +417,12 @@ function createFreshVault(){
 
 function ensureVault(){
   if(!state.vault) state.vault=createFreshVault();
-  if(!state.vaultEarned) state.vaultEarned=createFreshVaultEarned();
 
   let vows=getVaultVows();
   for(let i=0;i<vows.length;i++){
     if(typeof state.vault[vows[i]]!=="number") state.vault[vows[i]]=0;
   }
 }
-
 function vaultCoinsHTML(count){
   let goldValue=COPPER_PER_SILVER*SILVER_PER_GOLD;
   let gold=Math.floor(count/goldValue);
@@ -1092,8 +1090,12 @@ function lockDay(){
   for(let i=0;i<damageStates.length;i++){
     if(state.damage[todayIndex][i]) passed=false;
   }
-  state.statuses[todayIndex]=passed ? "complete" : "failed";
-mintVaultCoinsForToday();
+let wasAlreadyLocked=state.statuses[todayIndex]!=="inactive";
+state.statuses[todayIndex]=passed ? "complete" : "failed";
+
+if(!wasAlreadyLocked){
+  mintVaultCoinsForToday();
+}
   let newRecord=false;
   let newAchievement=false;
   if(passed){
