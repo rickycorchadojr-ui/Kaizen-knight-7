@@ -1105,8 +1105,8 @@ function showCheck(restoreScroll=null){
   }
   html+="</div>";
   html+="<div class='panel-buttons'>";
-  html+="<button class='mini-btn' onclick='lockDay()'>LOCK</button>";
-  html+="<button class='mini-btn' onclick='showMain()'>BACK</button>";
+html+="<button class='mini-btn' onclick='showMain()'>BACK</button>";
+html+="<button class='mini-btn' onclick='lockDay()'>LOCK</button>";
   html+="</div>";
   html+="</div>";
   document.getElementById("playArea").innerHTML=html;
@@ -1329,6 +1329,13 @@ function mintVaultCoinsForToday(){
 }
 function lockDay(){
   if(!requirePower()) return;
+
+  if(state.statuses[todayIndex]!=="inactive"){
+    play("reset");
+    showMain();
+    return;
+  }
+
   stopPet();
   stopFirework();
   let passed=true;
@@ -1339,12 +1346,8 @@ function lockDay(){
   for(let i=0;i<damageStates.length;i++){
     if(state.damage[todayIndex][i]) passed=false;
   }
-let wasAlreadyLocked=state.statuses[todayIndex]!=="inactive";
 state.statuses[todayIndex]=passed ? "complete" : "failed";
-
-if(!wasAlreadyLocked){
-  mintVaultCoinsForToday();
-}
+mintVaultCoinsForToday();
   let newRecord=false;
   let newAchievement=false;
 if(passed){
