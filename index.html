@@ -405,7 +405,7 @@ function ufoHTML(){
 }
 
 function planeHTML(){
-  return "<div style='position:absolute;top:50px;left:80px;z-index:99;background:red;color:white;font-size:30px;padding:4px 10px;'>PLANE TEST</div>";
+  return "<div class='sky-object fly-right' style='--sky-top:50px;--sky-duration:4s;--sky-delay:0s;'><img class='sky-img' id='planeImg' src='./Plane1.png'></div>";
 }
 
 function startSkyAnimations(){
@@ -424,7 +424,7 @@ function startSkyAnimations(){
       frame=1;
     }
 
-    plane.src="Plane"+frame+".png";
+    plane.src="./Plane"+frame+".png";
 
   },1000/PLANE_FPS);
 }
