@@ -276,7 +276,7 @@ const manualNotes=[
   ["RISK SETTINGS REMOVED","DAMAGE: SAFETY WAS UNLOCKED."],
   ["BOUGHT / RESET COMBINE","DAMAGE: PAID TO CONTINUE THE LOOP."]
 ];
-const APP_VERSION="5.4.7";
+const APP_VERSION="6.0.0";
 const DEBUG_MODE=false;
 const days=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"];
 let todayIndex=getTradingDayIndex();
@@ -321,6 +321,23 @@ const FORCE_RAINBOW_TEST=false;
 const RAINBOW_CHANCE=100; // 1 in 100. Lower = more common. Higher = rarer.
 const SKY_MIN_Y=5;
 const SKY_MAX_Y=36;
+const MUSIC_VOLUME=.34;
+
+const streakSongs=[
+  {day:40,file:"Brazil.mp3"},
+  {day:30,file:"Gerudo Valley.mp3"},
+  {day:20,file:"Peter Purser.mp3"},
+  {day:10,file:"Maria Elena.mp3"},
+  {day:7,file:"Kk.mp3"},
+  {day:6,file:"Perfidia.mp3"},
+  {day:5,file:"Majora.mp3"},
+  {day:4,file:"End Titles.mp3"},
+  {day:3,file:"Femme.mp3"},
+  {day:2,file:"Mario Party.mp3"}
+];
+
+let bgMusic=null;
+let currentMusicFile=null;
 
 const UFO_MIN_DURATION=42;
 const UFO_MAX_DURATION=78;
@@ -607,6 +624,56 @@ function playDamageNote(){
 }
 function playGoodSeal(){ play("good"); }
 function playAchievementSound(){ play("achievement"); }
+function getStreakSong(){
+
+  for(let i=0;i<streakSongs.length;i++){
+
+    if(state.streak>=streakSongs[i].day){
+      return streakSongs[i];
+    }
+
+  }
+
+  return null;
+}
+
+function stopStreakMusic(){
+
+  if(bgMusic){
+    bgMusic.pause();
+    bgMusic.currentTime=0;
+  }
+
+  bgMusic=null;
+  currentMusicFile=null;
+}
+
+function updateStreakMusic(){
+
+  if(!poweredOn) return;
+
+  const song=getStreakSong();
+
+  if(!song){
+    stopStreakMusic();
+    return;
+  }
+
+  if(currentMusicFile===song.file && bgMusic){
+    return;
+  }
+
+  stopStreakMusic();
+
+  currentMusicFile=song.file;
+
+  bgMusic=new Audio(song.file);
+
+  bgMusic.loop=true;
+  bgMusic.volume=MUSIC_VOLUME;
+
+  bgMusic.play().catch(()=>{});
+}
 function getTradingDayIndex(){
   let d=new Date().getDay();
   if(d===6) return -1;
@@ -1020,8 +1087,12 @@ function addWeekRecord(weeklyForm){
 function shouldShowFinalForm(){ return state.finalForm && (todayIndex===5 || todayIndex===-1); }
 function powerOn(){
   if(poweredOn) return;
+
   poweredOn=true;
+
   play("boot");
+  updateStreakMusic();
+
   showBoot();
 }
 function showBoot(){
@@ -1093,8 +1164,9 @@ petHTML(petType)+
 "</div>"+
 "<div class='version-line'>VER "+APP_VERSION+"</div>"+
 (DEBUG_MODE ? "<button onclick='debugAddStreak()' style='position:absolute;left:8px;bottom:4px;z-index:30;font-family:VT323;font-size:14px;background:#111;color:white;border:none;'>+STREAK</button>" : "");
-  startPet(fromBoot ? 650 : 0);
+startPet(fromBoot ? 650 : 0);
 startSkyAnimations();
+updateStreakMusic();
 }
 function showCheck(restoreScroll=null){
   if(!requirePower()) return;
@@ -1442,9 +1514,11 @@ petHTML(petType)+
     sealText+
     "<br>"+resultText+
     "</div>";
-  startPet();
+startPet();
 startSkyAnimations();
-  if(shouldPlayFirework) setTimeout(()=>startFirework(),450);
+updateStreakMusic();
+
+if(shouldPlayFirework) setTimeout(()=>startFirework(),450);
   if(newRecord && newAchievement) setTimeout(()=>showAchievementBanner(state.streak),650);
 }
 function makeSaveData(){
@@ -1530,6 +1604,11 @@ function restoreSaveData(){
     }
 
     state=imported;
+
+// Keep restored weekly progress attached to the current visible week.
+// Without this, loadState() may treat the imported save as an old week
+// and reset the SUN-FRI progress bar after reload.
+state.weekKey=weekKey;
 
     if(!state.achievements) state.achievements={};
     if(!state.records) state.records=[];
