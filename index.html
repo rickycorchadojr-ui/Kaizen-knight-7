@@ -37,8 +37,8 @@ body{margin:0;height:100vh;background:#111;display:flex;justify-content:center;a
 .status-bar{height:38px;border-bottom:4px solid #111;display:flex;justify-content:center;align-items:center;font-size:24px;letter-spacing:2px;flex-shrink:0;}
 .off .status-bar,.boot-dark .status-bar{color:#e9ecd8;border-bottom:4px solid #e9ecd8;}
 .play-area{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;box-sizing:border-box;overflow:hidden;position:relative;}
-.scene-bg{position:absolute;left:50%;bottom:78px;width:320px;height:auto;transform:translateX(-50%);object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;z-index:1;pointer-events:none;}
-.halloween-overlay{position:absolute;left:50%;bottom:78px;width:320px;height:auto;transform:translateX(-50%);object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;z-index:1;pointer-events:none;}
+.scene-bg{position:absolute;left:50%;bottom:60px;width:320px;height:auto;transform:translateX(-50%);object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;z-index:1;pointer-events:none;}
+.halloween-overlay{position:absolute;left:50%;bottom:60px;width:320px;height:auto;transform:translateX(-50%);object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;z-index:1;pointer-events:none;}
 .rainbow-overlay{position:absolute;left:50%;top:0px;width:320px;height:auto;transform:translateX(-50%);object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;z-index:2;pointer-events:none;}
 .crack-overlay{position:absolute;left:50%;top:0px;width:320px;height:auto;transform:translateX(-50%);object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;z-index:2;pointer-events:none;}
 .sky-object{
@@ -276,7 +276,7 @@ const manualNotes=[
   ["RISK SETTINGS REMOVED","DAMAGE: SAFETY WAS UNLOCKED."],
   ["BOUGHT / RESET COMBINE","DAMAGE: PAID TO CONTINUE THE LOOP."]
 ];
-const APP_VERSION="5.4.5";
+const APP_VERSION="5.4.6";
 const DEBUG_MODE=true;
 const days=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"];
 let todayIndex=getTradingDayIndex();
@@ -319,8 +319,8 @@ const FORCE_CHRISTMAS_TEST=false;
 
 const FORCE_RAINBOW_TEST=false;
 const RAINBOW_CHANCE=100; // 1 in 100. Lower = more common. Higher = rarer.
-const SKY_MIN_Y=42;
-const SKY_MAX_Y=66;
+const SKY_MIN_Y=18;
+const SKY_MAX_Y=36;
 
 const UFO_MIN_DURATION=42;
 const UFO_MAX_DURATION=78;
