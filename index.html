@@ -351,7 +351,7 @@ const manualNotes=[
   ["RISK SETTINGS REMOVED","DAMAGE: SAFETY WAS UNLOCKED."],
   ["BOUGHT / RESET COMBINE","DAMAGE: PAID TO CONTINUE THE LOOP."]
 ];
-const APP_VERSION="7.0.0";
+const APP_VERSION="7.0.1";
 const DEBUG_MODE=false;
 const days=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"];
 let todayIndex=getTradingDayIndex();
@@ -408,7 +408,8 @@ const streakSongs=[
   {day:5,file:"Majora.mp3"},
   {day:4,file:"End Titles.mp3"},
   {day:3,file:"Femme.mp3"},
-  {day:2,file:"Mario Party.mp3"}
+  {day:2,file:"Mario Party.mp3"},
+  {day:1,file:"Roger.mp3"}
 ];
 
 let bgMusic=null;
@@ -1212,7 +1213,9 @@ function renderDays(){
     if(i===todayIndex) el.classList.add("today");
   }
 }
-function cleanCount(){ return state.statuses.filter(s=>s==="complete").length; }
+function cleanCount(){
+  return state.statuses.filter(s=>s==="complete" || s==="recovery").length;
+}
 function failedCount(){ return state.statuses.filter(s=>s==="failed").length; }
 function perfectWeek(){
   for(let i=0;i<6;i++){
@@ -1343,12 +1346,15 @@ function showMorningGate(){
   document.getElementById("playArea").innerHTML=html;
 }
 function chooseTradeDay(){
+  if(!confirm("BEGIN TRADE DAY?")) return;
+
   play("menu");
   showTradeGateTest();
 }
 
 function chooseSundayDay(){
   if(todayIndex!==0) return;
+  if(!confirm("BEGIN SUNDAY DAY?")) return;
 
   play("menu");
   state.dayMode="sunday";
@@ -1358,6 +1364,8 @@ function chooseSundayDay(){
 }
 
 function chooseRecoveryDay(){
+  if(!confirm("TAKE RECOVERY DAY? THIS WILL MARK TODAY AS REST.")) return;
+
   play("good");
 
   state.dayMode="recovery";
@@ -1369,24 +1377,10 @@ function chooseRecoveryDay(){
   saveState();
   showMain();
 }
-function awardRecoveryDay(){
-  if(todayIndex<0) return;
-  if(state.statuses[todayIndex]!=="inactive") return;
-
-state.statuses[todayIndex]="recovery";
-logRecoveryDay();
-state.streak++;
-
-  if(recordAchievement(state.streak)){
-    // achievement recorded silently
-  }
-
-  if(state.streak>state.bestStreak && state.streak<=365){
-    state.bestStreak=state.streak;
-  }
-}
 
 function chooseDamageDay(){
+  if(!confirm("SKIP TEST AND BEGIN NORMAL TRADE DAY?")) return;
+
   play("menu");
 
   state.dayMode="trade";
@@ -1396,8 +1390,7 @@ function chooseDamageDay(){
 
   saveState();
   showMain();
-}
-function showHomeAfterBoot(fromBoot=false){
+}function showHomeAfterBoot(fromBoot=false){
   if(todayIndex>=0 && state.dayMode==="undecided"){
     showMorningGate();
     return;
@@ -1472,7 +1465,7 @@ petHTML(petType)+
     "<div class='ground'></div>"+
     "<div class='textbox'>"+
     weekText+
- "<br><span class='subline'>CLEAN DAYS: "+cleanCount()+"/6</span>"+
+ "<br><span class='subline'>STREAK DAYS: "+cleanCount()+"/6</span>"+
 "</div>"+
 "<div class='version-line'>VER "+APP_VERSION+"</div>"+
 (DEBUG_MODE ? "<button onclick='debugAddStreak()' style='position:absolute;left:8px;bottom:4px;z-index:30;font-family:VT323;font-size:14px;background:#111;color:white;border:none;'>+STREAK</button>" : "");
@@ -1853,12 +1846,16 @@ function showGatePassedScreen(){
 
 function showGateFailedScreen(){
   document.getElementById("statusBar").innerHTML="ACCESS DENIED";
+
   document.getElementById("playArea").innerHTML=
     "<div class='panel'>"+
-    "<div class='panel-title'>WARNING</div>"+
+    "<div class='panel-title'>SUBJECT: TRADER</div>"+
     "<div class='scroll' style='display:flex;align-items:center;justify-content:center;text-align:center;font-size:28px;line-height:1.05;'>"+
-    "EMOTIONALLY COMPROMISED<br><br>DO. NOT. TRADE."+
-    "<br><br><span style='font-size:22px;'>CONVERT THIS DAY INTO RECOVERY.</span>"+
+    "STATUS: COMPROMISED"+
+    "<br><br>"+
+    "ASSIGNMENT: RECOVERY"+
+    "<br><br>"+
+    "<span style='font-size:22px;'>DO. NOT. TRADE.</span>"+
     "</div>"+
     "<div class='panel-buttons'>"+
     "<button class='mini-btn' onclick='convertGateFailToRecovery()'>RECOVERY</button>"+
@@ -2075,6 +2072,8 @@ function mintVaultCoinsForToday(){
 }
 function lockDay(){
   if(!requirePower()) return;
+
+  if(!confirm("LOCK THIS DAY? THIS CANNOT BE UNDONE.")) return;
 
 if(state.statuses[todayIndex]!=="inactive"){
   play("reset");
