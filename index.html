@@ -217,10 +217,10 @@ transform:scaleX(-1);
   <div class="screen off" id="screen">
     <div class="status-bar" id="statusBar">POWER OFF</div>
     <div class="play-area" id="playArea">
-      <button class="power-quote" onclick="powerOn()">
-        “The minute that we change our minds and stop giving power to the past, the past with its mistakes loses its power over us.”
-        <span class="power-author">— Psycho-Cybernetics</span>
-      </button>
+<button class="power-quote" onclick="powerOn()">
+  “<span id="powerQuoteText"></span>”
+  <span class="power-author" id="powerQuoteAuthor"></span>
+</button>
     </div>
   </div>
   <div class="week-row">
@@ -351,7 +351,19 @@ const manualNotes=[
   ["RISK SETTINGS REMOVED","DAMAGE: SAFETY WAS UNLOCKED."],
   ["BOUGHT / RESET COMBINE","DAMAGE: PAID TO CONTINUE THE LOOP."]
 ];
-const APP_VERSION="7.0.1";
+const powerQuotes=[
+  {
+    text:"The minute that we change our minds and stop giving power to the past, the past with its mistakes loses its power over us.",
+    author:"— Psycho-Cybernetics",
+    weight:85
+  },
+  {
+    text:"Progress is impossible without change and those who cannot change their minds cannot change anything.",
+    author:"— George Bernard Shaw",
+    weight:15
+  }
+];
+const APP_VERSION="7.0.2";
 const DEBUG_MODE=false;
 const days=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"];
 let todayIndex=getTradingDayIndex();
@@ -447,6 +459,42 @@ function seasonalOverlayHTML(){
 
 function getDayKey(){
   return new Date().toISOString().slice(0,10);
+}
+function rollPowerQuoteForToday(){
+  const dayKey=getDayKey();
+
+  if(state.powerQuoteDayKey===dayKey) return;
+
+  state.powerQuoteDayKey=dayKey;
+
+  let total=0;
+  for(let i=0;i<powerQuotes.length;i++){
+    total+=powerQuotes[i].weight;
+  }
+
+  let roll=Math.random()*total;
+  let chosen=0;
+
+  for(let i=0;i<powerQuotes.length;i++){
+    roll-=powerQuotes[i].weight;
+    if(roll<=0){
+      chosen=i;
+      break;
+    }
+  }
+
+  state.powerQuoteIndex=chosen;
+  saveState();
+}
+
+function renderPowerQuote(){
+  const quote=powerQuotes[state.powerQuoteIndex] || powerQuotes[0];
+
+  const textEl=document.getElementById("powerQuoteText");
+  const authorEl=document.getElementById("powerQuoteAuthor");
+
+  if(textEl) textEl.innerHTML=quote.text;
+  if(authorEl) authorEl.innerHTML=quote.author;
 }
 
 function rollRainbowForToday(){
@@ -872,6 +920,8 @@ rainbowDayKey:null,
 rainbowToday:false,
 crackActive:false,
 finalForm:null,
+powerQuoteDayKey:null,
+powerQuoteIndex:0,
     achievements:{},
 records:[],
 recoveryLog:[],
@@ -921,6 +971,8 @@ if(typeof parsed.finalForm==="undefined") parsed.finalForm=null;
 if(typeof parsed.rainbowDayKey==="undefined") parsed.rainbowDayKey=null;
 if(typeof parsed.rainbowToday==="undefined") parsed.rainbowToday=false;
 if(typeof parsed.crackActive==="undefined") parsed.crackActive=false;
+if(typeof parsed.powerQuoteDayKey==="undefined") parsed.powerQuoteDayKey=null;
+if(typeof parsed.powerQuoteIndex==="undefined") parsed.powerQuoteIndex=0;
 
 // DAILY MODE SYSTEM MIGRATION
 if(typeof parsed.modeDate==="undefined") parsed.modeDate=getDayKey();
@@ -2335,8 +2387,10 @@ saveState();
 }
 ensureDailyModeFresh();
 rollRainbowForToday();
+rollPowerQuoteForToday();
 buildSounds();
 ensureAchievementArchive();
+renderPowerQuote();
 renderDays();
 </script>
 </body>
