@@ -379,7 +379,7 @@ const powerQuotes=[
     weight:15
   }
 ];
-const APP_VERSION="7.7.2";
+const APP_VERSION="7.7.3";
 const DEBUG_MODE=false;
 const days=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"];
 let todayIndex=getTradingDayIndex();
@@ -1105,17 +1105,25 @@ function ensureDailyModeFresh(){
   if(state.modeDate===todayKey) return;
 
   state.modeDate=todayKey;
+
+  if(todayIndex>=0 && state.statuses && state.statuses[todayIndex]!=="inactive"){
+    saveState();
+    return;
+  }
+
   state.dayMode="undecided";
   state.gateCompleted=false;
   state.gatePassed=false;
   state.recoveryChosen=false;
   state.damageProtocolActive=false;
   state.gateAnswers=Array(gateQuestions.length).fill(false);
-state.readinessScore=null;
-state.readinessWeather=null;
-state.damageProtocolVows=Array.from({length:6},()=>Array(damageProtocolVows.length).fill(false));
+  state.readinessScore=null;
+  state.readinessWeather=null;
+  state.damageProtocolVows=Array.from({length:6},()=>Array(damageProtocolVows.length).fill(false));
+
   saveState();
 }
+
 function cleanCountFromStatuses(statuses){
   if(!statuses) return 0;
   return statuses.filter(s=>s==="complete").length;
@@ -1558,7 +1566,11 @@ function chooseDamageDay(){
 }
 
 function showHomeAfterBoot(fromBoot=false){
-  if(todayIndex>=0 && state.dayMode==="undecided"){
+  if(
+    todayIndex>=0 &&
+    state.dayMode==="undecided" &&
+    state.statuses[todayIndex]==="inactive"
+  ){
     showMorningGate();
     return;
   }
