@@ -204,7 +204,10 @@ transform:scaleX(-1);
 .day.inactive{opacity:.55;}
 .buttons{margin-top:14px;display:flex;justify-content:space-around;align-items:flex-start;gap:10px;}
 .control-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;}
-.control-wrap:nth-child(2){transform:translateY(6px);}
+.control-wrap:nth-child(2),
+.control-wrap:nth-child(3){
+  transform:translateY(6px);
+}
 .control-wrap button{width:44px;height:44px;border-radius:50%;background:#F7CD47;color:transparent;border:none;font-family:'VT323',monospace;font-size:0;box-shadow:0 5px 0 #C99A22;}
 .control-wrap button:active{transform:translateY(3px);box-shadow:0 2px 0 #C99A22;}
 .control-label{font-family:'VT323',monospace;color:#7a7a7a;font-size:12px;line-height:1;text-transform:uppercase;letter-spacing:2px;}  
@@ -406,7 +409,7 @@ const powerQuotes=[
     weight:15
   }
 ];
-const APP_VERSION="7.8.0";
+const APP_VERSION="7.8.1";
 const DEBUG_MODE=false;
 const days=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"];
 let todayIndex=getTradingDayIndex();
@@ -2118,14 +2121,14 @@ function showTrain(playSound=true){
   html+="<div class='scroll'>";
 
   html+="<div class='training-stat'>";
-  html+="<div>RANK</div>";
-  html+="<div class='training-big'>"+getTrainingRankName()+"</div>";
-  html+="</div>";
-
-  html+="<div class='training-stat'>";
   html+="<div>TODAY</div>";
   html+="<div class='training-bar'>"+trainingProgressBar()+"</div>";
   html+="<div class='training-big'>"+state.todayDrills+" / "+state.trainingTarget+"</div>";
+  html+="</div>";
+
+  html+="<div class='training-stat'>";
+  html+="<div>RANK</div>";
+  html+="<div class='training-big'>"+getTrainingRankName()+"</div>";
   html+="</div>";
 
   html+="<div class='training-stat'>";
